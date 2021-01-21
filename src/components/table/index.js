@@ -4,6 +4,7 @@ import { resizeHeandler } from './table.resize'
 import { isCell, matrix, nextSelector, shouldResize } from './table.function'
 import { TableSelection } from './TableSelection'
 import { $ } from '../../core/dom'
+import * as action from '../../duks/actions'
 export class Table extends ExcelComponent {
     static className = 'excel__table';
     static colCount = 25;
@@ -15,23 +16,36 @@ export class Table extends ExcelComponent {
         })
     }
     toHtml() {
-        return createTable(Table.colCount);
+        return createTable(Table.colCount, this.store.getState());
     }
     prepear() {
         this.selection = new TableSelection()
     }
     init() {
         super.init()
-        const $cell = this.$root.find(`[data-id="0/0"]`)
-        this.selection.select($cell)
+        this.selectCell(this.$root.find(`[data-id="0/0"]`))
         this.$on('formula:input',
             text => this.selection.current.text(text))
         this.$on('formula:keydown', event => this.onKeydown(event))
     }
+    selectCell($cell) {
+        this.selection.select($cell)
+        this.$emit('table:select', $cell)
+    }
+
+    async resizeTable(event) {
+        console.log('res', event);
+        try {
+            const data = await resizeHeandler(event, this.$root)
+            this.$dispatch(action.tableResize(data));
+        } catch (error) {
+            console.warn(error)
+        }
+    }
 
     onMousedown(event) {
         if (shouldResize(event)) {
-            resizeHeandler(event, this.$root)
+            this.resizeTable(event)
         } else if (isCell(event)) {
             const $target = $(event.target);
             if (event.shiftKey) {
@@ -39,7 +53,7 @@ export class Table extends ExcelComponent {
                     .map(id => this.$root.find(`[data-id="${id}"]`))
                 this.selection.selectGroup(cells)
             } else {
-                this.selection.select($target);
+                this.selectCell($target);
             }
         }
     }

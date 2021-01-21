@@ -9,6 +9,9 @@ export class Formula extends ExcelComponent {
             ...options,
         })
     }
+    init() {
+        super.init()
+    }
     toHtml() {
         return `
         <div class="info">fx</div>

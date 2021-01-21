@@ -10,7 +10,8 @@
     "arrow-parens":"off",
     "object-curly-spacing":"off",
     "require-jsdoc":"off",
-    "indent":"off"
+    "indent":"off",
+    "quotes":"off"
     },
     "extends": ["eslint:recommended", "google"]
 }

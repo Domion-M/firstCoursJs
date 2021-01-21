@@ -14,3 +14,9 @@ export function renge(start, end) {
             return start + index
         });
 }
+export function storege(key, data = null) {
+    if (!data) {
+        return JSON.parse(localStorage.getItem(key))
+    }
+    localStorage.setItem(key, JSON.stringify(data))
+}
