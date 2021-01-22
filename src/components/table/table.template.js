@@ -1,3 +1,7 @@
+import { defaultStyles } from "../../constants";
+import { parse } from "../../core/parse";
+import { toInlineStyles } from "../../core/utils";
+
 const CODES = {
     A: 65,
     Z: 90,
@@ -11,14 +15,22 @@ function getWhith(state, index) {
 function toCell(row, state) {
     return function cell(_, col) {
         const width = getWhith(state, col)
+        const id = `${row}/${col}`
+        const text = state.dataState[id]
+        const styles = toInlineStyles({
+            ...defaultStyles,
+            ...state.stylesState[id],
+        })
         return `
         <div 
         class="cell" 
         data-col="${col}" 
         data-type="cell"
-        data-id="${row}/${col}" 
-        style="width:${width}"
+        data-id="${id}" 
+        data-value="${text || ''}"
+        style="${styles} width:${width};"
         contenteditable>
+        ${parse(text) || ''}
         </div>
         `
     }
@@ -38,11 +50,16 @@ function toColumn({ col, index, width }) {
     `
 }
 
-function createRows(index, content) {
+function createRows(index, content, height) {
     const resize = index ?
         '<div class="row-resize" data-resize="row"></div>' : ''
     return `
-    <div class="row" data-type="resizable" data-row="${index - 1}">
+    <div 
+    class="row" 
+    data-type="resizable" 
+    data-row="${index - 1}"
+    style="height:${height}"
+    >
         <div class="row-info">${index ?? ''}
         ${resize}        
         </div >
@@ -76,11 +93,12 @@ export function createTable(rowsCount = 15, state = {}) {
     rows.push(createRows(null, cols));
 
     for (let row = 0; row < rowsCount; row++) {
+        const height = (state.rowState[row] || 24) + 'px'
         const cells = new Array(colsCount)
             .fill('')
             .map(toCell(row, state))
             .join('')
-        rows.push(createRows(row + 1, cells))
+        rows.push(createRows(row + 1, cells, height))
     }
     return rows.join('')
 }

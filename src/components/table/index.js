@@ -5,13 +5,15 @@ import { isCell, matrix, nextSelector, shouldResize } from './table.function'
 import { TableSelection } from './TableSelection'
 import { $ } from '../../core/dom'
 import * as action from '../../duks/actions'
+import { defaultStyles } from '../../constants';
+import { parse } from '../../core/parse';
 export class Table extends ExcelComponent {
     static className = 'excel__table';
     static colCount = 25;
     constructor($root, options) {
         super($root, {
             name: 'Table',
-            listeners: ['mousedown', 'keydown'],
+            listeners: ['mousedown', 'keydown', 'input'],
             ...options,
         })
     }
@@ -25,12 +27,28 @@ export class Table extends ExcelComponent {
         super.init()
         this.selectCell(this.$root.find(`[data-id="0/0"]`))
         this.$on('formula:input',
-            text => this.selection.current.text(text))
+            text => {
+                this.selection.current
+                    .attr('data-value', text)
+                    .text(parse(text))
+                this.updateTextInStore(text)
+            })
         this.$on('formula:keydown', event => this.onKeydown(event))
+        this.$on('toolbar:applayStyle',
+            value => {
+                this.selection.applyStyle(value)
+                this.$dispatch(action.applyStyle({
+                    value,
+                    ids: this.selection.selectedIds,
+                }))
+            }
+        )
     }
     selectCell($cell) {
         this.selection.select($cell)
         this.$emit('table:select', $cell)
+        const styles = $cell.getStyles(Object.keys(defaultStyles))
+        this.$dispatch(action.changeStyles(styles))
     }
 
     async resizeTable(event) {
@@ -72,6 +90,18 @@ export class Table extends ExcelComponent {
             const id = this.selection.current.id('/')
             const $next = this.$root.find(nextSelector(key, id, Table.colCount))
             this.selection.select($next, id)
+            this.$emit('table:select', $next)
         }
+    }
+
+    updateTextInStore(value) {
+        this.$dispatch(action.changeText({
+            id: this.selection.current.id(),
+            value,
+        }))
+    }
+
+    onInput(event) {
+        this.updateTextInStore($(event.target).text())
     }
 }

@@ -30,10 +30,10 @@ export function resizeHeandler(e, $root) {
                 parent.css({ height: value + 'px' });
                 $resize.css({ opacity: 0, right: 0, bottom: 0 });
             }
-            console.log(parent.data);
             resolve({
                 value,
-                id: type === 'col' ? parent.data.col : null,
+                id: parent.data[type],
+                type,
             })
         }
     })
