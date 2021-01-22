@@ -4,7 +4,10 @@ import {
     TABLE_RESIZE,
     APPLY_STORE,
     CHANGE_TITLE,
+    UPDATE_DATE,
 } from "./type.action"
+import moment from 'moment'
+import { formatDate } from "../constants";
 
 export function rootReducer(state, action) {
     let feild;
@@ -40,6 +43,8 @@ export function rootReducer(state, action) {
             }
         case CHANGE_TITLE:
             return { ...state, title: action.data }
+        case UPDATE_DATE:
+            return { ...state, openDate: moment().format(formatDate) }
         default: return state
     }
 }

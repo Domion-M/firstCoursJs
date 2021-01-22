@@ -1,5 +1,6 @@
-import { storege } from "../core/utils";
-import { defaultStyles, defaultTitle } from '../constants';
+import { defaultStyles, defaultTitle, formatDate } from '../constants';
+import { clone } from '../core/utils';
+import moment from 'moment'
 
 const normalize = state => ({
     ...state,
@@ -7,7 +8,7 @@ const normalize = state => ({
     currentText: '',
 })
 
-export const initialState = normalize(storege('exel-state') || {
+const defaultState = {
     title: defaultTitle,
     colState: {},
     rowState: {},
@@ -15,4 +16,9 @@ export const initialState = normalize(storege('exel-state') || {
     stylesState: {},
     currentText: '',
     currentStyles: defaultStyles,
-})
+    openDate: moment().format(formatDate),
+}
+
+export function normolizeInitialState(state) {
+    return state ? normalize(state) : clone(defaultState)
+}

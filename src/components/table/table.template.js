@@ -17,6 +17,7 @@ function toCell(row, state) {
         const width = getWhith(state, col)
         const id = `${row}/${col}`
         const text = state.dataState[id]
+        const value = parse(text) || text || ''
         const styles = toInlineStyles({
             ...defaultStyles,
             ...state.stylesState[id],
@@ -30,7 +31,7 @@ function toCell(row, state) {
         data-value="${text || ''}"
         style="${styles} width:${width};"
         contenteditable>
-        ${parse(text) || ''}
+        ${value}
         </div>
         `
     }

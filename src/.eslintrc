@@ -11,7 +11,8 @@
     "object-curly-spacing":"off",
     "require-jsdoc":"off",
     "indent":"off",
-    "quotes":"off"
+    "quotes":"off",
+    "operator-linebreak":"off"
     },
     "extends": ["eslint:recommended", "google"]
 }
