@@ -4,7 +4,7 @@ import { Header } from '../components/header'
 import { Toolbar } from '../components/toolbar'
 import { Formula } from '../components/formula'
 import { Table } from '../components/table'
-import { createStore } from '../core/createStore';
+import { createStore } from '../core/createStore/createStore';
 import { rootReducer } from '../duks/rootReducer';
 import { storege, debounce } from '../core/utils';
 import { normolizeInitialState } from '../duks/initailState';
